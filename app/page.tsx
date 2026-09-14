@@ -1,5 +1,3 @@
-import Link from 'next/link';
-import {ArrowRight,LogIn,LogOut,Camera,CheckCheck,Clock3} from 'lucide-react';
 import PublicShell from '@/components/PublicShell';
-import HomeIdentity from '@/components/HomeIdentity';
-export default function Home(){return <PublicShell><section className="portalHero"><HomeIdentity/><div className="portalActions"><Link href="/checkin" className="actionCard checkinCard"><div className="actionTop"><span className="featureIcon"><LogIn size={26}/></span><span className="actionTag">START YOUR DAY</span></div><h2>Let’s get to work.</h2><p>Find your profile and take a quick photo to check in.</p><span className="actionCta">Check In <ArrowRight size={22}/></span></Link><Link href="/checkout" className="actionCard checkoutCard"><div className="actionTop"><span className="featureIcon"><LogOut size={26}/></span><span className="actionTag">WRAP THINGS UP</span></div><h2>All done for today?</h2><p>Confirm your details, take a photo and check out. We’ll take care of the hours.</p><span className="actionCta">Check Out <ArrowRight size={22}/></span></Link></div><div className="portalBenefits"><span><Camera size={17}/> Live photo check-in</span><span><Clock3 size={17}/> Accurate IST timestamps</span><span><CheckCheck size={17}/> Automatically recorded</span></div></section></PublicShell>}
+import HomeContent from '@/components/HomeContent';
+export default function Home(){return <PublicShell><HomeContent/></PublicShell>}
