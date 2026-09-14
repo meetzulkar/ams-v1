@@ -1,0 +1,7 @@
+const test=require('node:test');const assert=require('node:assert/strict');const ts=require('typescript');const fs=require('node:fs');const vm=require('node:vm');const out={};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('lib/employee-form.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:out,require});
+const schema=out.employeeFormSchema;
+const employee={employee_id:'EMP01',full_name:'Test Employee',mobile:'9876543210',emergency_phone:'9876543211',gender:'Female',date_of_birth:'1995-06-12',department:'Operations',designation:'Coordinator',date_of_joining:'2026-09-14',shift_start:'09:00',shift_end:'18:00',standard_hours:9};
+test('email is optional and each requested field is mandatory',()=>{assert.equal(schema.parse(employee).email,null);assert.equal(schema.parse({...employee,email:''}).email,null);for(const key of Object.keys(employee)){const missing={...employee};delete missing[key];assert.equal(schema.safeParse(missing).success,false,key)}});
+test('invalid dates, times, email and hours are rejected',()=>{for(const patch of [{date_of_birth:'2026-02-30'},{shift_start:'25:00'},{email:'invalid'},{standard_hours:0},{standard_hours:25}])assert.equal(schema.safeParse({...employee,...patch}).success,false)});
+test('removed fields cannot overwrite stored values through form payload',()=>{const data=schema.parse({...employee,address:'overwrite',status:'inactive',pan_number:'overwrite'});for(const key of ['address','status','pan_number'])assert.equal(Object.hasOwn(data,key),false)});

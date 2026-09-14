@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {requireAdmin} from '@/lib/auth';import {supabaseAdmin} from '@/lib/supabase';
+export async function GET(req:Request){const a=await requireAdmin();if(!a.ok)return NextResponse.json({message:'Unauthorized'},{status:a.status});const limit=Math.min(Number(new URL(req.url).searchParams.get('limit')||100),500);const {data,error}=await supabaseAdmin().from('audit_logs').select('*').order('created_at',{ascending:false}).limit(limit);return NextResponse.json({data,error})}

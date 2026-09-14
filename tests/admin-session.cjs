@@ -1,0 +1,8 @@
+const test=require('node:test');const assert=require('node:assert/strict');const ts=require('typescript');const fs=require('node:fs');const vm=require('node:vm');
+const exportsForTest={};const environment={ADMIN_PANEL_PASSWORD:'test-password-only'};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('lib/admin-session.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:exportsForTest,require,Buffer,Date,process:{env:environment}});
+const {createAdminSession,validAdminSession,passwordMatches}=exportsForTest;
+test('admin password comparison rejects missing and incorrect inputs',()=>{assert.equal(passwordMatches('test-password-only'),true);for(const value of ['wrong',null,{},''])assert.equal(passwordMatches(value),false)});
+test('signed session is accepted and legacy cookie is rejected',()=>{assert.equal(validAdminSession(createAdminSession()),true);assert.equal(validAdminSession('granted'),false);assert.equal(validAdminSession(),false)});
+test('session cannot be forged by modifying signature or expiry',()=>{const token=createAdminSession();assert.equal(validAdminSession(token.slice(0,-1)+'!'),false);const parts=token.split('.');parts[0]=String(Date.now()+60000);assert.equal(validAdminSession(parts.join('.')),false)});
+test('expired session fails and changing admin password invalidates sessions',()=>{const token=createAdminSession();const parts=token.split('.');parts[0]='1';assert.equal(validAdminSession(parts.join('.')),false);environment.ADMIN_PANEL_PASSWORD='changed';assert.equal(validAdminSession(token),false);environment.ADMIN_PANEL_PASSWORD='test-password-only'});

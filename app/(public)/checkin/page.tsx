@@ -1,0 +1,1 @@
+import PublicShell from '@/components/PublicShell';import AttendanceForm from '@/components/AttendanceForm';export default function Page(){return <PublicShell><AttendanceForm mode="checkin"/></PublicShell>}

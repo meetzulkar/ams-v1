@@ -1,0 +1,2 @@
+import {NextResponse} from 'next/server';import {requireAdmin} from '@/lib/auth';import {supabaseAdmin} from '@/lib/supabase';
+export async function POST(req:Request){const a=await requireAdmin();if(!a.ok)return NextResponse.json({message:'Unauthorized'},{status:a.status});const {from,to}=await req.json();if(!from||!to)return NextResponse.json({message:'from and to required'},{status:400});const {data,error}=await supabaseAdmin().rpc('generate_absent_records',{p_from:from,p_to:to});return NextResponse.json({created:data,error},{status:error?500:200})}
