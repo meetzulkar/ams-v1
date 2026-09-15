@@ -52,7 +52,7 @@ export async function recordAttendance(req:Request,mode:'checkin'|'checkout') {
       saved=data;message=`Check-out saved at ${istTime(time)} IST. Worked ${hoursLabel(worked)}.${half?' Half day marked.':''}`;
     }
     const email=await sendAttendanceEmail(`${mode==='checkin'?'Check-in':'Check-out'} · ${employee.full_name}`,`<h2>${mode==='checkin'?'Check-in':'Check-out'}</h2><p>${escapeHtml(employee.full_name)} (${escapeHtml(employee.employee_id)})</p><p>${escapeHtml(message)}</p><p>Date: ${date}</p>`,saved.id,mode);
-    return NextResponse.json({message,attendanceId:saved.id,email});
+    return NextResponse.json({message,attendanceId:saved.id,timestamp:time,email});
   } catch(error) {
     console.error('Attendance save failed:',error instanceof Error?error.message:'Database or storage error');
     return NextResponse.json({message:'Unable to save attendance. Please try again or contact the administrator.'},{status:500});
