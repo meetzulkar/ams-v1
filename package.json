@@ -22,6 +22,7 @@
     "pdfkit": "latest",
     "react": "latest",
     "react-dom": "latest",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "latest"
   },
   "devDependencies": {
