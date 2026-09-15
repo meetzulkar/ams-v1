@@ -75,7 +75,7 @@ export async function GET(req: Request) {
     let data = await getRows(from, to, employeeId);
 
     if (status) {
-      data = data.filter((row) => row.status === status);
+      data = data.filter((row) => status === 'full_day' ? !!row.check_out && ['present','late','full_day'].includes(row.status) : row.status === status);
     }
     if (penaltyOnly) {
       data = data.filter((row) => row.penalty === true);
