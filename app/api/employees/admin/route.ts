@@ -1,7 +1,7 @@
 import {employeeFormSchema} from '@/lib/employee-form';
 import {z} from 'zod';
 import {NextResponse} from 'next/server';import {supabaseAdmin} from '@/lib/supabase';import {requireAdmin} from '@/lib/auth';
-export async function GET(){const a=await requireAdmin();if(!a.ok)return NextResponse.json({message:'Unauthorized'},{status:a.status});const {data,error}=await supabaseAdmin().from('employees').select('*').order('full_name');return NextResponse.json({data,error},{status:error?500:200})}
+export async function GET(req:Request){const a=await requireAdmin();if(!a.ok)return NextResponse.json({message:'Unauthorized'},{status:a.status});if(new URL(req.url).searchParams.get('picker')==='true'){const rows=[];for(let offset=0;;offset+=1000){const {data,error}=await supabaseAdmin().from('employees').select('id,employee_id,full_name,department').order('full_name').order('id').range(offset,offset+999);if(error)return NextResponse.json({message:'Unable to load employees.'},{status:500});rows.push(...(data||[]));if(!data||data.length<1000)break;}return NextResponse.json({data:rows});}const {data,error}=await supabaseAdmin().from('employees').select('*').order('full_name');return NextResponse.json({data,error},{status:error?500:200})}
 async function saveEmployee(req:Request,editing:boolean){
  const a=await requireAdmin();if(!a.ok)return NextResponse.json({message:'Unauthorized'},{status:a.status});
  let body;try{body=await req.json()}catch{return NextResponse.json({message:'Invalid request.'},{status:400})}
